@@ -55,6 +55,30 @@ namespace Dapper.DAL
 
             var data = conn.Query<AirCraftCarrier>("SELECT 1 AS Id, 'The most powerful war mechine in the world!' AS Description");
             Console.WriteLine(data.First().Description);
+
+            var values = conn.Query("SELECT a = 1, 2 AS a, 3 AS A");
+            Console.WriteLine(values.First().a);
+            Console.WriteLine(values.First().A);
+
+            // Exception: 区分大小写
+            values = conn.Query("SELECT a = 1");
+            //Console.WriteLine(values.First().A);
+            Console.WriteLine(values.First());
+
+            conn.Close();
+            conn.Dispose();
+        }
+
+        /// <summary>
+        /// 多插
+        /// </summary>
+        private static void DapperInsert()
+        {
+            var sqlFactory = System.Data.SqlClient.SqlClientFactory.Instance as DbProviderFactory;
+            var conn = sqlFactory.CreateConnection();
+            conn.ConnectionString = ConnectionString;
+            var count = conn.Execute(@"insert MyTable(colA, colB) values (@a, @b)",
+    new[] { new { a = 1, b = 1 }, new { a = 2, b = 2 }, new { a = 3, b = 3 } };
         }
 
         #endregion
