@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 
 namespace Dapper.DAL
 {
@@ -7,13 +8,15 @@ namespace Dapper.DAL
     {
         static void Main(string[] args)
         {
-            var connStr = "";
+            var connStr = "Data Source=.;Initial Catalog=tempdb;Integrated Security=True";
 
-            var provider = System.Data.SqlDbType
-            var provider = System.Data.Common.DbProviderFactories.GetFactory("System")
+            var provider = System.Data.SqlClient.SqlClientFactory.Instance;
+            //var provider = System.Data.Common.DbProviderFactories.GetFactory("System.Data.SqlClient.SqlClientFactory");
 
-            IDbConnection conn;
-            conn.Query
+            IDbConnection conn = provider.CreateConnection();
+            conn.ConnectionString = connStr;
+            var values = conn.Query("SELECT a = 1");
+            Console.WriteLine(values.First().a);
         }
     }
 }
