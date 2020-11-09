@@ -8,11 +8,11 @@ namespace Dapper.DAL
 {
     class Program
     {
-        private const string ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Sample.KeylessEntityTypes;Integrated Security=True";
+        private const string ConnectionString = @"Data Source=.;Initial Catalog=tempdb;Integrated Security=True";
 
         static void Main(string[] args)
         {
-            DapperExecution();
+            EquipEventTable();
 
             Console.ReadLine();
         }
@@ -74,11 +74,40 @@ namespace Dapper.DAL
         /// </summary>
         private static void DapperInsert()
         {
+            DbConnection conn = GetConnection(ConnectionString);
+            var count = conn.Execute(@"insert MyTable(colA, colB) values (@a, @b)",
+    new[] { new { a = 1, b = 1 }, new { a = 2, b = 2 }, new { a = 3, b = 3 } });
+        }
+
+        /// <summary>
+        /// 获取数据库连接
+        /// </summary>
+        /// <param name="connStr"></param>
+        /// <returns></returns>
+        private static DbConnection GetConnection(string connStr)
+        {
             var sqlFactory = System.Data.SqlClient.SqlClientFactory.Instance as DbProviderFactory;
             var conn = sqlFactory.CreateConnection();
-            conn.ConnectionString = ConnectionString;
-            var count = conn.Execute(@"insert MyTable(colA, colB) values (@a, @b)",
-    new[] { new { a = 1, b = 1 }, new { a = 2, b = 2 }, new { a = 3, b = 3 } };
+            conn.ConnectionString = connStr;
+            return conn;
+        }
+
+        #endregion
+
+        #region AlarmCenter
+
+        /// <summary>
+        /// 设备事件表
+        /// </summary>
+        private static void EquipEventTable()
+        {
+            var connStr = @"Data Source=DESKTOP-QVGRGC1\SQLEXPRESS;Initial Catalog=GWDatabase_AIGarbage;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            var sql = $"SELECT equip_no AS EquipNo, event AS Event, ycyx_no AS PointNo, time AS Time FROM ycyxEvt";
+            var conn = GetConnection(connStr);
+
+            var events = conn.Query<EquipEvent>(sql);
+            Console.WriteLine(events.Count());
+            Console.WriteLine(events.First(e => e.EquipNo <= 10000).Event);
         }
 
         #endregion
