@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.DAL.Core.Clock;
+using MySql.DAL.Core.MyDbData;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -14,6 +16,111 @@ namespace MySql.DAL.Core
     {
         static async Task Main(string[] args)
         {
+            try
+            {
+                await CreateTableAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            Console.ReadLine();
+        }
+
+        #region 创建表
+
+        private static async Task CreateTableAsync()
+        {
+            var services = new ServiceCollection();
+            //services.AddEntityFrameworkMySql();
+            services.AddDbContext<MyDbContext>(builder =>
+            {
+                builder
+                    .UseMySql(
+                        // 连接字符串
+                        "server=localhost;user=root;password=357592895;charset=utf8;database=mydb",
+                        builder => builder.EnableRetryOnFailure())
+                    .UseLoggerFactory(
+                        LoggerFactory.Create(
+                            logging => logging
+                                .AddConsole()
+                                .AddFilter(level => level >= LogLevel.Information)))
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors();
+            }, ServiceLifetime.Transient);
+
+            var tasks = new Task[100];
+            for (int i = 0; i < 100; i++)
+            {
+                var t = Task.Factory.StartNew(() =>
+                {
+                    while (true)
+                    {
+                        CreateOrUpdateItem(services);
+                    }
+                });
+
+                tasks[i] = t;
+            }
+        }
+
+        static void CreateOrUpdateItem(ServiceCollection services)
+        {
+            using (var sp = services.BuildServiceProvider())
+            using (var scope = sp.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetService<MyDbContext>();
+
+                var model = new biz_GeomagCurrentStatus
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Address = "福州",
+                    Longitude = 120.1,
+                    Latitude = 29.5,
+                    State = "有车",
+                    UploadTime = DateTime.Now.AddSeconds(-1D),
+                    ReceiveTime = DateTime.Now,
+                };
+
+                if (db.biz_GeomagCurrentStatus.AsNoTracking().FirstOrDefault(b => b.Id == model.Id) == null)
+                {
+                    db.biz_GeomagCurrentStatus.Add(model);
+                }
+                else
+                {
+                    db.biz_GeomagCurrentStatus.Update(model);
+                }
+
+                db.SaveChanges();
+
+                //foreach (var item in db.biz_GeomagCurrentStatus)
+                //{
+                //    Write(item);
+                //}
+            }
+        }
+
+        #endregion
+
+        #region Linq表达式树 + EFCore
+
+        private static void Void()
+        {
+            //var connStrParameter = "10.44.78.3;hbj_iot;(#G*Y3jfdiot;biz_263010";
+            //var parameters = connStrParameter.Split(';');
+            //if (parameters.Length != 4)
+            //    return;
+
+            //var server = parameters[0];
+            //var userId = parameters[1];
+            //var password = parameters[2];
+            //var databaseName = parameters[3];
+
+            //var connStr = $"server={server};user={userId};password={password};database={databaseName}";
+            //Console.WriteLine(connStr);
+            //return;
+
             var services = new ServiceCollection();
             //services.AddEntityFrameworkMySql();
             services.AddDbContextPool<biz_263010Context>(builder =>
@@ -21,7 +128,11 @@ namespace MySql.DAL.Core
                 builder
                     .UseMySql(
                         // 连接字符串
-                        "server=localhost;user=root;password=357592895;database=biz_263010")
+                        "server=localhost;user=root;password=357592895;database=biz_263010",
+                        builder => builder.EnableRetryOnFailure())
+                    //"server=10.44.78.3;user=hbj_iot;password=(#G*Y3jfdiot;database=biz_263010")
+                    //, builder =>
+                    //builder.EnableRetryOnFailure())
                     .UseLoggerFactory(
                         LoggerFactory.Create(
                             logging => logging
@@ -157,9 +268,15 @@ namespace MySql.DAL.Core
             return station;
         }
 
+        #endregion
+
+        #region 日志
+
         private static void Write(object obj)
         {
             Console.WriteLine(JsonConvert.SerializeObject(obj, Formatting.Indented));
         }
+
+        #endregion
     }
 }
