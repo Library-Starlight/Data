@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30626.31
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.DAL", "Dapper.DAL\Dapper.DAL.csproj", "{BE92552E-CBDE-4428-AC51-313AB97EE5E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.DAL", "Dapper.DAL\Dapper.DAL.csproj", "{3053F3AB-DF36-4031-BD81-F618E515EA83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.Data", "Dapper.Data\Dapper.Data.csproj", "{0414A666-9DCA-4B45-A98D-9915556F9C74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.Data.MySql", "Dapper.Data.MySql\Dapper.Data.MySql.csproj", "{79AB96B9-2D11-417D-A18B-B24B6283809F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.Data.MySql.Oracle", "Dapper.Data.MySql.Oracle\Dapper.Data.MySql.Oracle.csproj", "{32A8B736-EC28-431D-B40B-A7F97072D88B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +17,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BE92552E-CBDE-4428-AC51-313AB97EE5E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE92552E-CBDE-4428-AC51-313AB97EE5E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE92552E-CBDE-4428-AC51-313AB97EE5E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE92552E-CBDE-4428-AC51-313AB97EE5E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3053F3AB-DF36-4031-BD81-F618E515EA83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3053F3AB-DF36-4031-BD81-F618E515EA83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3053F3AB-DF36-4031-BD81-F618E515EA83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3053F3AB-DF36-4031-BD81-F618E515EA83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0414A666-9DCA-4B45-A98D-9915556F9C74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0414A666-9DCA-4B45-A98D-9915556F9C74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0414A666-9DCA-4B45-A98D-9915556F9C74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0414A666-9DCA-4B45-A98D-9915556F9C74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79AB96B9-2D11-417D-A18B-B24B6283809F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79AB96B9-2D11-417D-A18B-B24B6283809F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79AB96B9-2D11-417D-A18B-B24B6283809F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79AB96B9-2D11-417D-A18B-B24B6283809F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32A8B736-EC28-431D-B40B-A7F97072D88B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32A8B736-EC28-431D-B40B-A7F97072D88B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32A8B736-EC28-431D-B40B-A7F97072D88B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32A8B736-EC28-431D-B40B-A7F97072D88B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
