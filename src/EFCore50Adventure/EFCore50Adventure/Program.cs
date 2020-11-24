@@ -3,6 +3,7 @@ using EFCore50Adventure.Data;
 using EFCore50Adventure.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ async Task QueryAndChangeAsync()
     services.AddDbContextFactory<ContactContext>(
         opt =>
             opt.UseSqlite(connString)
-             //.LogTo(Console.WriteLine)
+             .LogTo(Console.WriteLine, LogLevel.Information)
              );
 
     List<Contact> contacts = null;
@@ -51,8 +52,8 @@ async Task QueryAndChangeAsync()
         .Where(c => c.City.Contains(""))
         .Skip(20).Take(20);
 
-    var queryStr = query1.ToQueryString();
-    Console.WriteLine(queryStr);
+    //var queryStr = query1.ToQueryString();
+    //Console.WriteLine(queryStr);
 
     // Query
     contacts = await query1.ToListAsync();
@@ -60,8 +61,8 @@ async Task QueryAndChangeAsync()
     // Change
     var query2 = context.Contacts;
 
-    queryStr = query2.ToQueryString();
-    Console.WriteLine(queryStr);
+    //queryStr = query2.ToQueryString();
+    //Console.WriteLine(queryStr);
 
     var contact = await query2.SingleOrDefaultAsync(c => c.Id == 1);
 
