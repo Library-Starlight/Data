@@ -20,7 +20,8 @@ async Task SetupDatabaseAsync()
 
     var optionBuilder = new DbContextOptionsBuilder<ContactContext>()
         .UseSqlite(connString)
-        .LogTo(Console.WriteLine);
+        //.LogTo(Console.WriteLine)
+        ;
 
     var context = new ContactContext(optionBuilder.Options);
 
@@ -39,22 +40,30 @@ async Task QueryAndChangeAsync()
     services.AddDbContextFactory<ContactContext>(
         opt =>
             opt.UseSqlite(connString)
-             .LogTo(Console.WriteLine));
+             //.LogTo(Console.WriteLine)
+             );
 
     List<Contact> contacts = null;
     var factory = services.BuildServiceProvider().GetService<IDbContextFactory<ContactContext>>();
     using var context = factory.CreateDbContext();
 
-    var query = context.Contacts
+    var query1 = context.Contacts
         .Where(c => c.City.Contains(""))
         .Skip(20).Take(20);
 
+    var queryStr = query1.ToQueryString();
+    Console.WriteLine(queryStr);
+
     // Query
-    contacts = await query.ToListAsync();
+    contacts = await query1.ToListAsync();
 
     // Change
-    var contact = await context.Contacts
-        .SingleOrDefaultAsync(c => c.Id == 1);
+    var query2 = context.Contacts;
+
+    queryStr = query2.ToQueryString();
+    Console.WriteLine(queryStr);
+
+    var contact = await query2.SingleOrDefaultAsync(c => c.Id == 1);
 
     contact.State = "1111";
     contact.ZipCode = "11";
