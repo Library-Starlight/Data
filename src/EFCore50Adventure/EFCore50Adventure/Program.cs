@@ -9,34 +9,88 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-var connString = $"Data Source={nameof(ContactContext.ContactDb)}.db";
+await RelationQueryAsync();
 
-await SetupDatabaseAsync();
+#region 关系查询
 
-await QueryAndChangeAsync();
-
-async Task SetupDatabaseAsync()
+async Task RelationQueryAsync()
 {
-    Console.WriteLine($"{new Unicorn()}{Environment.NewLine}Preparing database...");
+    var jack = new User { Name = "Jack" };
+    var john = new ExternalUser { Name = "John", ExternalCompany = "Bigsoft" };
 
-    var optionBuilder = new DbContextOptionsBuilder<ContactContext>()
-        .UseSqlite(connString)
-        //.LogTo(Console.WriteLine)
-        ;
+    var football = new Group { Name = "Football", Users = new List<User> { jack, john } };
+    var basketball = new Group { Name = "Basketball", Users = new List<User> { john } };
 
-    var context = new ContactContext(optionBuilder.Options);
+    var context = new UserContext();
+    await context.Database.EnsureDeletedAsync();
+    await context.Database.EnsureCreatedAsync();
+    context.AddRange(jack, john, football, basketball);
+    await context.SaveChangesAsync();
 
-    // Seed
-    if (await context.Database.EnsureCreatedAsync() || await context.Contacts.CountAsync() == 0)
+    var users = await context.Users
+        //.Where(user => user.Memberships.Any(m => m.Group.Name == "Basketball"))
+        .Where(user => user.Groups.Any(g => g.Name == "Basketball"))
+        .ToListAsync();
+    foreach (var user in users)
     {
-        var newContact = new Contact { Id = 1, FirstName = "", State = "", ZipCode = "" };
-        context.Contacts.Add(newContact);
-        await context.SaveChangesAsync();
+        Console.WriteLine($"Id: {user.Id}, User: {user.Name}");
+    }
+
+    var oldTimers = await context.Users.Where(u => u.Memberships.Any(m => m.MemberSince > new DateTime(2000, 1, 1))).ToListAsync();
+    foreach (var user in oldTimers)
+    {
+        Console.WriteLine($"Id: {user.Id}, User: {user.Name}");
+    }
+
+    var externalUsers = await context.Set<ExternalUser>().ToListAsync();
+    foreach (var user in externalUsers)
+    {
+        Console.WriteLine($"Id: {user.Id}, User: {user.Name}");
     }
 }
 
+#endregion
+
+#region 查询
+
+/// <summary>
+/// 查询
+/// </summary>
+async Task QueryAsync()
+{
+    var connString = $"Data Source={nameof(ContactContext.ContactDb)}.db";
+
+    await SetupDatabaseAsync();
+
+    await QueryAndChangeAsync();
+
+    async Task SetupDatabaseAsync()
+    {
+        Console.WriteLine($"{new Unicorn()}{Environment.NewLine}Preparing database...");
+
+        var optionBuilder = new DbContextOptionsBuilder<ContactContext>()
+            .UseSqlite(connString)
+            //.LogTo(Console.WriteLine)
+            ;
+
+        var context = new ContactContext(optionBuilder.Options);
+
+        // Seed
+        if (await context.Database.EnsureCreatedAsync() || await context.Contacts.CountAsync() == 0)
+        {
+            var newContact = new Contact { Id = 1, FirstName = "", State = "", ZipCode = "" };
+            context.Contacts.Add(newContact);
+            await context.SaveChangesAsync();
+        }
+    }
+}
+
+#endregion
+
 async Task QueryAndChangeAsync()
 {
+    var connString = $"Data Source={nameof(ContactContext.ContactDb)}.db";
+
     var services = new ServiceCollection();
     services.AddDbContextFactory<ContactContext>(
         opt =>
