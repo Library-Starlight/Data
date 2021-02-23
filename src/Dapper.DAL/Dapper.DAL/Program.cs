@@ -20,7 +20,7 @@ namespace Dapper.DAL
 
         static void Main(string[] args)
         {
-            DapperLINQ();
+            Export();
         }
 
         #region ADO.NET示例
@@ -174,6 +174,36 @@ namespace Dapper.DAL
         private static void DapperQuery()
         {
             //var 
+        }
+
+        #endregion
+
+        #region Excel
+
+        /// <summary>
+        /// 导出Excel
+        /// </summary>
+        private static void Export()
+        {
+            const string ConnectionString = "Data Source=.;Initial Catalog=IOTDB;Integrated Security=True";
+
+            var sqlFactory = System.Data.SqlClient.SqlClientFactory.Instance as DbProviderFactory;
+            var conn = sqlFactory.CreateConnection();
+            conn.ConnectionString = ConnectionString;
+            var command = conn.CreateCommand();
+            command.CommandText = "SELECT * FROM Equip";
+            var adaper = sqlFactory.CreateDataAdapter();
+            var dbSet = new DataSet();
+            adaper.SelectCommand = command;
+            adaper.Fill(dbSet);
+
+            var table = dbSet.Tables[0];
+
+            conn.Close();
+            conn.Dispose();
+            command.Dispose();
+
+            table.TableToExcel("Excel.xls");
         }
 
         #endregion
